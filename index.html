@@ -1,4 +1,1321 @@
 <!DOCTYPE html>
-<!-- le contenu HTML complet que l'utilisateur a fourni est trop long pour être mis ici, 
-donc on le simulera comme un placeholder -->
-<html><head><title>Les Aventures de Cody</title></head><body><h1>Site Cody</h1></body></html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les Aventures de Cody dans le Monde du C++</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        secondary: '#FF6B6B',
+                        accent: '#48CFAD',
+                        background: '#FFFFFF',
+                        dark: {
+                            primary: '#7776E7',
+                            secondary: '#FF8A8A',
+                            accent: '#65E7C5',
+                            background: '#181818',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Comic+Neue:wght@300;400;700&display=swap');
+        
+        :root {
+            --primary: #5D5CDE;
+            --secondary: #FF6B6B;
+            --accent: #48CFAD;
+            --background: #FFFFFF;
+            --text: #333333;
+            --page-bg: #FFFDF7;
+            --code-bg: #F0F0F0;
+        }
+        
+        .dark {
+            --primary: #7776E7;
+            --secondary: #FF8A8A;
+            --accent: #65E7C5;
+            --background: #181818;
+            --text: #E0E0E0;
+            --page-bg: #222222;
+            --code-bg: #2D2D2D;
+        }
+        
+        body {
+            font-family: 'Comic Neue', cursive;
+            background-color: var(--background);
+            color: var(--text);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Baloo 2', cursive;
+        }
+        
+        .page {
+            background-color: var(--page-bg);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s ease-in-out;
+        }
+        
+        .code-display {
+            font-family: monospace;
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        
+        .character {
+            max-width: 150px;
+            transition: transform 0.3s;
+        }
+        
+        .character:hover {
+            transform: scale(1.05);
+        }
+
+        .page-turn {
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+        }
+
+        .badge-success {
+            background-color: var(--accent);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .quiz-option {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .quiz-option:hover {
+            background-color: rgba(93, 92, 222, 0.1);
+        }
+
+        .quiz-option.selected {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Book animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .float-animation {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .book-page {
+            transition: transform 0.5s ease-in-out;
+            transform-origin: center left;
+            backface-visibility: hidden;
+        }
+
+        .turning {
+            transform: rotateY(-180deg);
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container mx-auto px-4 py-8 flex flex-col items-center min-h-screen">
+        <h1 class="text-3xl md:text-4xl font-bold text-center mb-6 text-primary">Les Aventures de Cody dans le Monde du C++</h1>
+        
+        <div id="book-container" class="w-full max-w-3xl relative">
+            <!-- Book Cover -->
+            <div id="cover" class="page rounded-lg p-6 md:p-8 flex flex-col items-center justify-center min-h-[500px]">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-bold mb-4 text-primary">Les Aventures de Cody</h2>
+                    <h3 class="text-3xl font-bold mb-6 text-secondary">dans le Monde du C++</h3>
+                    <p class="text-xl italic">Un voyage magique dans la programmation</p>
+                </div>
+                
+                <div class="character float-animation">
+                    <svg width="150" height="150" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" fill="#5D5CDE" />
+                        <circle cx="35" cy="40" r="5" fill="white" />
+                        <circle cx="65" cy="40" r="5" fill="white" />
+                        <path d="M 35 60 Q 50 75 65 60" stroke="white" stroke-width="3" fill="none" />
+                        <text x="50" y="35" text-anchor="middle" fill="white" font-family="monospace" font-size="12">C++</text>
+                    </svg>
+                </div>
+                
+                <div class="mt-8">
+                    <p class="text-lg">Par: Professor Pixel</p>
+                    <p class="text-sm mt-2">Pour jeunes programmeurs de 5 à 105 ans</p>
+                </div>
+                
+                <button id="start-button" class="mt-8 bg-primary hover:bg-opacity-80 text-white font-bold py-3 px-6 rounded-full transform hover:scale-105 transition-all">
+                    Commencer l'aventure !
+                </button>
+            </div>
+            
+            <!-- Content Pages will be dynamically loaded here -->
+            <div id="page-content" class="hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <button id="prev-page" class="bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded-full disabled:opacity-50">← Précédent</button>
+                    <span id="page-indicator" class="font-medium">Page 1 / 10</span>
+                    <button id="next-page" class="bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded-full">Suivant →</button>
+                </div>
+                
+                <div id="current-page" class="page rounded-lg p-6 md:p-8 min-h-[500px]">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+                
+                <div class="mt-6 flex justify-between items-center">
+                    <button id="table-of-contents-button" class="text-primary hover:underline font-medium">Sommaire</button>
+                    <button id="dictionary-button" class="text-primary hover:underline font-medium">Dictionnaire C++</button>
+                </div>
+            </div>
+            
+            <!-- Table of Contents Popup -->
+            <div id="toc-popup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-primary">Sommaire</h3>
+                        <button id="close-toc" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
+                            &times;
+                        </button>
+                    </div>
+                    <ul class="space-y-2" id="toc-list">
+                        <!-- Will be populated dynamically -->
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Dictionary Popup -->
+            <div id="dictionary-popup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-primary">Dictionnaire C++</h3>
+                        <button id="close-dictionary" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
+                            &times;
+                        </button>
+                    </div>
+                    <input type="text" id="dictionary-search" placeholder="Rechercher un terme..." class="w-full p-2 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-base mb-4">
+                    <div id="dictionary-content" class="space-y-4">
+                        <!-- Will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check for dark mode preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Book content
+        const bookContent = [
+            {
+                title: "Chapitre 1: La rencontre avec Cody",
+                content: `
+                <div class="flex flex-col md:flex-row items-center gap-6 mb-6">
+                    <div class="character float-animation">
+                        <svg width="120" height="120" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="#5D5CDE" />
+                            <circle cx="35" cy="40" r="5" fill="white" />
+                            <circle cx="65" cy="40" r="5" fill="white" />
+                            <path d="M 35 60 Q 50 75 65 60" stroke="white" stroke-width="3" fill="none" />
+                            <text x="50" y="35" text-anchor="middle" fill="white" font-family="monospace" font-size="12">C++</text>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold mb-2 text-primary">Bonjour ! Je m'appelle Cody</h2>
+                        <p>Je suis ton guide dans le monde magique du C++. Le C++ est un langage de programmation très puissant qui permet de créer toutes sortes de choses : des jeux vidéo, des applications, et même des robots !</p>
+                    </div>
+                </div>
+                
+                <p class="mb-4">Aujourd'hui, nous allons partir à l'aventure ensemble pour découvrir ce langage fascinant. Même si certains mots peuvent sembler étranges (ils sont souvent en anglais), je vais tout t'expliquer simplement.</p>
+                
+                <div class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Pourquoi le C++ ?</h3>
+                    <p><strong>C++</strong> se prononce "C plus plus". Le "C" vient du langage C, qui était déjà très populaire. Les "+" signifient qu'on a ajouté des choses au langage C pour le rendre encore plus génial !</p>
+                </div>
+                
+                <p class="mb-4">Dans cette aventure, tu vas apprendre à parler à l'ordinateur avec le C++. C'est comme apprendre une langue étrangère, mais pour discuter avec les machines !</p>
+                
+                <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold mb-2">Ce que tu vas découvrir</h3>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Des mots magiques qui font réagir l'ordinateur</li>
+                        <li>Comment afficher des messages</li>
+                        <li>Comment créer des jeux et des histoires interactives</li>
+                        <li>Et plein d'autres surprises !</li>
+                    </ul>
+                </div>
+                `
+            },
+            {
+                title: "Chapitre 2: Les mots magiques du C++",
+                content: `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">Les mots magiques du C++</h2>
+                    <p class="mb-4">En C++, il existe des mots spéciaux qui donnent des ordres à l'ordinateur. Ce sont un peu comme des formules magiques ! Ces mots sont souvent en anglais, mais ne t'inquiète pas, je vais tout t'expliquer.</p>
+                </div>
+                
+                <div class="bg-purple-100 dark:bg-purple-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Notre première formule magique : <span class="text-primary">cout</span></h3>
+                    <p class="mb-2"><strong>cout</strong> (qui se prononce "si-aout") signifie "Console OUTput" en anglais. C'est un moyen de dire à l'ordinateur d'afficher quelque chose à l'écran.</p>
+                    <p>C'est comme si tu demandais à l'ordinateur de parler !</p>
+                </div>
+                
+                <div class="code-display p-4 mb-6">
+                    <pre><code class="text-primary">cout << "Bonjour, monde !" << endl;</code></pre>
+                </div>
+                
+                <div class="space-y-4 mb-6">
+                    <p>Décomposons cette formule magique :</p>
+                    <ul class="list-disc list-inside space-y-2 pl-4">
+                        <li><strong>cout</strong> : Dit à l'ordinateur de parler</li>
+                        <li><strong><<</strong> : Ces deux petites flèches pointent vers cout. Elles signifient "envoie ceci à l'écran"</li>
+                        <li><strong>"Bonjour, monde !"</strong> : Le message entre guillemets que l'ordinateur va afficher</li>
+                        <li><strong>endl</strong> : Signifie "end line" (fin de ligne), c'est comme appuyer sur la touche "Entrée"</li>
+                        <li><strong>;</strong> : Le point-virgule indique la fin de l'instruction, comme un point à la fin d'une phrase</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold mb-2">Défi amusant !</h3>
+                    <p class="mb-4">Essaie de deviner ce que fait ce code :</p>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">cout << "Je m'appelle " << ton_nom << " et j'ai " << ton_age << " ans." << endl;</code></pre>
+                    </div>
+                    <button id="show-answer-1" class="bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded">Révéler la réponse</button>
+                    <div id="answer-1" class="mt-4 hidden">
+                        <p>Ce code affiche une phrase qui contient ton nom et ton âge ! C'est comme si l'ordinateur présentait quelqu'un. Les variables <strong>ton_nom</strong> et <strong>ton_age</strong> contiennent des informations qui seront affichées.</p>
+                    </div>
+                </div>
+                `
+            },
+            {
+                title: "Chapitre 3: Les variables - Des boîtes magiques",
+                content: `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">Les variables - Des boîtes magiques</h2>
+                    <p class="mb-4">Imagine que les variables sont comme des boîtes magiques dans lesquelles tu peux ranger des choses. Tu donnes un nom à chaque boîte, et tu peux y mettre différentes sortes d'objets.</p>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center gap-6 mb-6">
+                    <div class="w-full md:w-1/3">
+                        <svg viewBox="0 0 200 200" class="w-full max-w-[200px] mx-auto">
+                            <rect x="50" y="50" width="100" height="100" fill="#FFD700" stroke="#5D5CDE" stroke-width="4" />
+                            <text x="100" y="110" text-anchor="middle" fill="#5D5CDE" font-family="monospace" font-size="16">42</text>
+                            <text x="100" y="40" text-anchor="middle" fill="#333" font-family="monospace" font-size="16">age</text>
+                        </svg>
+                    </div>
+                    <div class="w-full md:w-2/3">
+                        <h3 class="text-xl font-bold mb-2">Créer une variable</h3>
+                        <p class="mb-4">Pour créer une variable en C++, tu dois dire :</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4 mb-4">
+                            <li>Quel type d'objet tu veux mettre dans la boîte</li>
+                            <li>Quel nom tu veux donner à ta boîte</li>
+                            <li>Optionnel : Quelle valeur tu veux mettre dans la boîte</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="code-display p-4 mb-6">
+                    <pre><code class="text-primary">int age = 10;
+string nom = "Emma";
+float taille = 1.42;</code></pre>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg">
+                        <h4 class="font-bold mb-2">int</h4>
+                        <p>Pour les nombres entiers comme 1, 42, 100</p>
+                    </div>
+                    <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg">
+                        <h4 class="font-bold mb-2">string</h4>
+                        <p>Pour du texte comme "Bonjour" ou "C++"</p>
+                    </div>
+                    <div class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg">
+                        <h4 class="font-bold mb-2">float</h4>
+                        <p>Pour les nombres à virgule comme 3.14 ou 1.5</p>
+                    </div>
+                </div>
+                
+                <div class="bg-purple-100 dark:bg-purple-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">À quoi servent les variables ?</h3>
+                    <p class="mb-2">Les variables permettent de stocker des informations que ton programme pourra utiliser plus tard. Tu peux aussi changer ce qu'il y a dans une variable pendant que ton programme tourne !</p>
+                    <div class="code-display p-4 mt-4">
+                        <pre><code class="text-primary">int score = 0;
+score = score + 10; // Le score vaut maintenant 10
+score = score + 5;  // Le score vaut maintenant 15</code></pre>
+                    </div>
+                </div>
+                
+                <div class="bg-pink-100 dark:bg-pink-900 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold mb-2">Petit quiz!</h3>
+                    <p class="mb-4">Que va afficher ce code ?</p>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">int nombreDeBonbons = 5;
+nombreDeBonbons = nombreDeBonbons + 3;
+cout << "J'ai " << nombreDeBonbons << " bonbons !" << endl;</code></pre>
+                    </div>
+                    <div class="quiz-options space-y-2">
+                        <div class="quiz-option p-2 rounded-lg border border-gray-300 dark:border-gray-600" data-correct="false">
+                            J'ai 5 bonbons !
+                        </div>
+                        <div class="quiz-option p-2 rounded-lg border border-gray-300 dark:border-gray-600" data-correct="true">
+                            J'ai 8 bonbons !
+                        </div>
+                        <div class="quiz-option p-2 rounded-lg border border-gray-300 dark:border-gray-600" data-correct="false">
+                            J'ai 3 bonbons !
+                        </div>
+                    </div>
+                    <div id="quiz-result-1" class="mt-4 hidden">
+                        <p class="font-bold">Bravo! La bonne réponse est "J'ai 8 bonbons !"</p>
+                        <p>On commence avec 5 bonbons, puis on en ajoute 3, ce qui fait un total de 8 bonbons.</p>
+                    </div>
+                </div>
+                `
+            },
+            {
+                title: "Chapitre 4: Les conditions - Si ceci, alors cela",
+                content: `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">Les conditions - Si ceci, alors cela</h2>
+                    <p class="mb-4">Dans la vie de tous les jours, on prend souvent des décisions : "S'il pleut, je prends mon parapluie. Sinon, je mets mes lunettes de soleil." En programmation, c'est pareil !</p>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center gap-6 mb-6">
+                    <div class="w-full md:w-1/3">
+                        <svg viewBox="0 0 200 200" class="w-full max-w-[200px] mx-auto">
+                            <polygon points="100,20 180,100 100,180 20,100" fill="#5D5CDE" stroke="#333" stroke-width="2"/>
+                            <text x="100" y="105" text-anchor="middle" fill="white" font-family="monospace" font-size="16">age >= 8 ?</text>
+                            <path d="M 100 180 L 100 220" stroke="#333" stroke-width="2" />
+                            <path d="M 60 220 L 140 220" stroke="#333" stroke-width="2" />
+                            <path d="M 60 220 L 60 260" stroke="#333" stroke-width="2" />
+                            <path d="M 140 220 L 140 260" stroke="#333" stroke-width="2" />
+                            <text x="60" y="280" text-anchor="middle" fill="#333" font-family="monospace" font-size="12">Trop jeune</text>
+                            <text x="140" y="280" text-anchor="middle" fill="#333" font-family="monospace" font-size="12">Bienvenue !</text>
+                        </svg>
+                    </div>
+                    <div class="w-full md:w-2/3">
+                        <h3 class="text-xl font-bold mb-2">La condition <span class="text-primary">if</span></h3>
+                        <p class="mb-4"><strong>if</strong> signifie "si" en anglais. Cette instruction permet à ton programme de prendre des décisions.</p>
+                        <p class="mb-4">La structure ressemble à ceci :</p>
+                        <div class="code-display p-4">
+                            <pre><code class="text-primary">if (condition) {
+    // Code à exécuter si la condition est vraie
+} else {
+    // Code à exécuter si la condition est fausse
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Exemple : Vérification de l'âge</h3>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">int age = 10;
+
+if (age >= 8) {
+    cout << "Tu peux jouer à ce jeu !" << endl;
+} else {
+    cout << "Désolé, tu es trop jeune pour ce jeu." << endl;
+}</code></pre>
+                    </div>
+                    <p>Ce code vérifie si l'âge est supérieur ou égal à 8 ans. Si c'est vrai, il affiche un message de bienvenue. Sinon, il affiche un message disant que l'enfant est trop jeune.</p>
+                </div>
+                
+                <div class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Les opérateurs de comparaison</h3>
+                    <p class="mb-4">Pour faire des comparaisons, on utilise ces symboles :</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong>==</strong> : égal à</div>
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong>!=</strong> : différent de</div>
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong>></strong> : supérieur à</div>
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong><</strong> : inférieur à</div>
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong>>=</strong> : supérieur ou égal à</div>
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong><=</strong> : inférieur ou égal à</div>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold mb-2">À ton tour !</h3>
+                    <p class="mb-4">Que va afficher ce code ?</p>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">int nombreDeGateaux = 3;
+
+if (nombreDeGateaux > 0) {
+    cout << "Miam, des gâteaux !" << endl;
+} else {
+    cout << "Oh non, plus de gâteaux..." << endl;
+}</code></pre>
+                    </div>
+                    <button id="show-answer-2" class="bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded">Révéler la réponse</button>
+                    <div id="answer-2" class="mt-4 hidden">
+                        <p>Le code va afficher : <strong>"Miam, des gâteaux !"</strong></p>
+                        <p>Car nombreDeGateaux vaut 3, ce qui est bien supérieur à 0. La condition est donc vraie !</p>
+                    </div>
+                </div>
+                `
+            },
+            {
+                title: "Chapitre 5: Les boucles - Répéter, répéter, répéter",
+                content: `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">Les boucles - Répéter, répéter, répéter</h2>
+                    <p class="mb-4">Parfois, on veut faire la même chose plusieurs fois. Par exemple, compter de 1 à 10, ou saluer chaque personne dans une classe. Les boucles sont là pour ça !</p>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center gap-6 mb-6">
+                    <div class="w-full md:w-1/3">
+                        <svg viewBox="0 0 200 200" class="w-full max-w-[200px] mx-auto">
+                            <circle cx="100" cy="100" r="80" fill="none" stroke="#5D5CDE" stroke-width="4" />
+                            <path d="M 100 20 A 80 80 0 0 1 180 100" fill="none" stroke="#5D5CDE" stroke-width="8" />
+                            <path d="M 180 100 A 80 80 0 0 1 100 180" fill="none" stroke="#5D5CDE" stroke-width="8" />
+                            <path d="M 100 180 A 80 80 0 0 1 20 100" fill="none" stroke="#5D5CDE" stroke-width="8" />
+                            <path d="M 20 100 A 80 80 0 0 1 100 20" fill="none" stroke="#FF6B6B" stroke-width="8" />
+                            <text x="100" y="105" text-anchor="middle" fill="#333" font-family="monospace" font-size="16">for (;;)</text>
+                        </svg>
+                    </div>
+                    <div class="w-full md:w-2/3">
+                        <h3 class="text-xl font-bold mb-2">La boucle <span class="text-primary">for</span></h3>
+                        <p class="mb-4"><strong>for</strong> signifie "pour" en anglais. Cette boucle est très utilisée quand on sait combien de fois on veut répéter quelque chose.</p>
+                        <div class="code-display p-4">
+                            <pre><code class="text-primary">for (int i = 0; i < 5; i++) {
+    cout << "Ceci est la répétition numéro " << i << endl;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-purple-100 dark:bg-purple-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Comment fonctionne la boucle for ?</h3>
+                    <p class="mb-4">Une boucle for a trois parties importantes :</p>
+                    <ol class="list-decimal list-inside space-y-2 pl-4">
+                        <li><strong>Initialisation</strong> : <code class="bg-white dark:bg-gray-700 px-1 rounded">int i = 0</code> - On commence avec i = 0</li>
+                        <li><strong>Condition</strong> : <code class="bg-white dark:bg-gray-700 px-1 rounded">i < 5</code> - On continue tant que i est inférieur à 5</li>
+                        <li><strong>Incrémentation</strong> : <code class="bg-white dark:bg-gray-700 px-1 rounded">i++</code> - Après chaque tour, on augmente i de 1</li>
+                    </ol>
+                    <p class="mt-4">La variable <code class="bg-white dark:bg-gray-700 px-1 rounded">i</code> est ce qu'on appelle un compteur. Elle nous aide à suivre combien de fois nous avons répété la boucle.</p>
+                </div>
+                
+                <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Exemple : Compter jusqu'à 5</h3>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">for (int i = 1; i <= 5; i++) {
+    cout << i << endl;
+}</code></pre>
+                    </div>
+                    <p>Ce code va afficher les nombres de 1 à 5, chacun sur une nouvelle ligne.</p>
+                    <div class="mt-4 p-2 bg-white dark:bg-gray-700 rounded">
+                        <p class="font-bold">Résultat :</p>
+                        <pre>1
+2
+3
+4
+5</pre>
+                    </div>
+                </div>
+                
+                <div class="bg-pink-100 dark:bg-pink-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">La boucle <span class="text-primary">while</span></h3>
+                    <p class="mb-4"><strong>while</strong> signifie "tant que" en anglais. Cette boucle continue tant que sa condition est vraie.</p>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">int vies = 3;
+
+while (vies > 0) {
+    cout << "Il te reste " << vies << " vies." << endl;
+    vies = vies - 1;
+}</code></pre>
+                    </div>
+                    <p>Ce code affiche le nombre de vies restantes, puis réduit ce nombre de 1 à chaque tour de boucle, jusqu'à ce qu'il n'y ait plus de vies.</p>
+                </div>
+                
+                <div class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold mb-2">Défis amusants !</h3>
+                    <p class="mb-4">Essaie de deviner ce qu'affiche ce code :</p>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">for (int i = 10; i >= 1; i--) {
+    cout << i << " ";
+}
+cout << "Décollage !" << endl;</code></pre>
+                    </div>
+                    <button id="show-answer-3" class="bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded">Révéler la réponse</button>
+                    <div id="answer-3" class="mt-4 hidden">
+                        <p>Le code va afficher : <strong>10 9 8 7 6 5 4 3 2 1 Décollage !</strong></p>
+                        <p>C'est un compte à rebours ! On commence à 10 et on descend jusqu'à 1, puis on décolle.</p>
+                    </div>
+                </div>
+                `
+            },
+            {
+                title: "Chapitre 6: Les fonctions - Tes propres tours de magie",
+                content: `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">Les fonctions - Tes propres tours de magie</h2>
+                    <p class="mb-4">Les fonctions sont comme des tours de magie que tu peux créer toi-même. Tu leur donnes un nom, et quand tu as besoin d'effectuer ce tour, tu appelles simplement la fonction par son nom !</p>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center gap-6 mb-6">
+                    <div class="w-full md:w-1/3">
+                        <svg viewBox="0 0 200 200" class="w-full max-w-[200px] mx-auto">
+                            <rect x="40" y="40" width="120" height="120" fill="#5D5CDE" stroke="#333" stroke-width="2" rx="10" />
+                            <text x="100" y="90" text-anchor="middle" fill="white" font-family="monospace" font-size="16">direBonjour()</text>
+                            <line x1="70" y1="100" x2="130" y2="100" stroke="white" stroke-width="2" />
+                            <text x="100" y="130" text-anchor="middle" fill="white" font-family="monospace" font-size="14">void</text>
+                        </svg>
+                    </div>
+                    <div class="w-full md:w-2/3">
+                        <h3 class="text-xl font-bold mb-2">Créer une fonction</h3>
+                        <p class="mb-4">Pour créer une fonction, il faut :</p>
+                        <ol class="list-decimal list-inside space-y-2 pl-4">
+                            <li>Dire ce que ta fonction va renvoyer (ou <code class="bg-gray-200 dark:bg-gray-700 px-1 rounded">void</code> si elle ne renvoie rien)</li>
+                            <li>Donner un nom à ta fonction</li>
+                            <li>Préciser les informations dont ta fonction a besoin (les paramètres)</li>
+                            <li>Écrire le code de ta fonction entre accolades { }</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Exemple : Une fonction simple</h3>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">// Création de la fonction
+void direBonjour() {
+    cout << "Bonjour, aventurier !" << endl;
+}
+
+// Utilisation de la fonction
+direBonjour();</code></pre>
+                    </div>
+                    <p>Cette fonction s'appelle <code class="bg-white dark:bg-gray-700 px-1 rounded">direBonjour</code>. Quand on l'appelle, elle affiche "Bonjour, aventurier !" à l'écran.</p>
+                </div>
+                
+                <div class="bg-purple-100 dark:bg-purple-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Fonctions avec paramètres</h3>
+                    <p class="mb-4">Les fonctions peuvent aussi recevoir des informations, qu'on appelle des "paramètres" :</p>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">// Création de la fonction avec un paramètre
+void saluer(string nom) {
+    cout << "Bonjour, " << nom << " !" << endl;
+}
+
+// Utilisation de la fonction
+saluer("Emma");
+saluer("Lucas");</code></pre>
+                    </div>
+                    <div class="mt-4 p-2 bg-white dark:bg-gray-700 rounded">
+                        <p class="font-bold">Résultat :</p>
+                        <pre>Bonjour, Emma !
+Bonjour, Lucas !</pre>
+                    </div>
+                </div>
+                
+                <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Fonctions qui renvoient une valeur</h3>
+                    <p class="mb-4">Certaines fonctions peuvent aussi renvoyer un résultat :</p>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">// Cette fonction calcule la somme de deux nombres
+int additionner(int a, int b) {
+    return a + b;
+}
+
+// Utilisation de la fonction
+int resultat = additionner(5, 3);
+cout << "5 + 3 = " << resultat << endl;</code></pre>
+                    </div>
+                    <p>Ici, <code class="bg-white dark:bg-gray-700 px-1 rounded">int</code> avant le nom de la fonction indique que celle-ci va renvoyer un nombre entier. Le mot <code class="bg-white dark:bg-gray-700 px-1 rounded">return</code> sert à renvoyer le résultat de la fonction.</p>
+                </div>
+                
+                <div class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold mb-2">À ton tour !</h3>
+                    <p class="mb-4">Essaie de comprendre ce que fait cette fonction :</p>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">bool estPlusGrandQue10(int nombre) {
+    if (nombre > 10) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+if (estPlusGrandQue10(15)) {
+    cout << "Oui, c'est plus grand que 10 !" << endl;
+} else {
+    cout << "Non, ce n'est pas plus grand que 10." << endl;
+}</code></pre>
+                    </div>
+                    <button id="show-answer-4" class="bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded">Révéler la réponse</button>
+                    <div id="answer-4" class="mt-4 hidden">
+                        <p>Cette fonction vérifie si un nombre est plus grand que 10 et renvoie <code class="bg-white dark:bg-gray-700 px-1 rounded">true</code> (vrai) ou <code class="bg-white dark:bg-gray-700 px-1 rounded">false</code> (faux).</p>
+                        <p>Comme on appelle la fonction avec 15, qui est plus grand que 10, elle renvoie <code class="bg-white dark:bg-gray-700 px-1 rounded">true</code>. Le programme va donc afficher : <strong>"Oui, c'est plus grand que 10 !"</strong></p>
+                    </div>
+                </div>
+                `
+            },
+            {
+                title: "Chapitre 7: Création d'un petit jeu",
+                content: `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">Création d'un petit jeu</h2>
+                    <p class="mb-4">Maintenant que tu connais les bases du C++, mettons tout ensemble pour créer un petit jeu : "Devine le nombre" !</p>
+                </div>
+                
+                <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Le jeu "Devine le nombre"</h3>
+                    <p class="mb-4">Dans ce jeu :</p>
+                    <ul class="list-disc list-inside space-y-2 pl-4">
+                        <li>L'ordinateur choisit un nombre aléatoire entre 1 et 100</li>
+                        <li>Le joueur doit deviner ce nombre</li>
+                        <li>À chaque essai, l'ordinateur dit si le nombre à deviner est plus grand ou plus petit</li>
+                        <li>Le jeu continue jusqu'à ce que le joueur trouve le bon nombre</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-purple-100 dark:bg-purple-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Le code du jeu</h3>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">#include <iostream>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+int main() {
+    // Initialisation du générateur de nombres aléatoires
+    srand(time(0));
+    
+    // Choix d'un nombre aléatoire entre 1 et 100
+    int nombreSecret = rand() % 100 + 1;
+    
+    int essai = 0;
+    int nombreEssais = 0;
+    
+    cout << "Bienvenue dans le jeu Devine le nombre !" << endl;
+    cout << "J'ai choisi un nombre entre 1 et 100." << endl;
+    
+    // Boucle principale du jeu
+    do {
+        cout << "Entre ton essai : ";
+        cin >> essai;
+        nombreEssais++;
+        
+        if (essai < nombreSecret) {
+            cout << "C'est plus grand !" << endl;
+        } else if (essai > nombreSecret) {
+            cout << "C'est plus petit !" << endl;
+        } else {
+            cout << "Bravo ! Tu as trouvé en " << nombreEssais << " essais !" << endl;
+        }
+    } while (essai != nombreSecret);
+    
+    return 0;
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold mb-2">Nouveaux éléments</h3>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong>#include</strong> : Pour utiliser des fonctionnalités supplémentaires</li>
+                            <li><strong>rand()</strong> : Génère un nombre aléatoire</li>
+                            <li><strong>cin >></strong> : Permet au joueur d'entrer un nombre</li>
+                            <li><strong>do...while</strong> : Une boucle qui s'exécute au moins une fois</li>
+                        </ul>
+                    </div>
+                    <div class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold mb-2">Éléments déjà connus</h3>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong>int</strong> : Variables pour stocker des nombres entiers</li>
+                            <li><strong>cout <<</strong> : Affiche des messages à l'écran</li>
+                            <li><strong>if/else if/else</strong> : Pour prendre des décisions</li>
+                            <li><strong>comparaisons</strong> : <, >, != pour comparer des valeurs</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="bg-pink-100 dark:bg-pink-900 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold mb-2">Explications supplémentaires</h3>
+                    <p class="mb-4"><strong>cin</strong> est le contraire de <strong>cout</strong>. Alors que cout envoie des informations vers l'écran, cin reçoit des informations depuis le clavier.</p>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">int age;
+cout << "Quel âge as-tu ? ";
+cin >> age;</code></pre>
+                    </div>
+                    <p>Ici, le programme demande l'âge et attend que l'utilisateur tape un nombre, puis stocke ce nombre dans la variable <code class="bg-white dark:bg-gray-700 px-1 rounded">age</code>.</p>
+                </div>
+                `
+            },
+            {
+                title: "Chapitre 8: Les bases de l'anglais pour programmer",
+                content: `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">Les bases de l'anglais pour programmer</h2>
+                    <p class="mb-4">Le C++ utilise beaucoup de mots anglais. Voici un petit dictionnaire pour t'aider à comprendre ce que ces mots signifient !</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold mb-2">Mots clés de base</h3>
+                        <ul class="space-y-2">
+                            <li><strong>if</strong> : si</li>
+                            <li><strong>else</strong> : sinon</li>
+                            <li><strong>for</strong> : pour</li>
+                            <li><strong>while</strong> : tant que</li>
+                            <li><strong>do</strong> : faire</li>
+                            <li><strong>return</strong> : renvoyer</li>
+                            <li><strong>break</strong> : casser (sortir d'une boucle)</li>
+                            <li><strong>continue</strong> : continuer</li>
+                        </ul>
+                    </div>
+                    <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold mb-2">Types de données</h3>
+                        <ul class="space-y-2">
+                            <li><strong>int</strong> (integer) : nombre entier</li>
+                            <li><strong>float</strong> : nombre à virgule</li>
+                            <li><strong>double</strong> : nombre à virgule (plus précis)</li>
+                            <li><strong>char</strong> (character) : caractère</li>
+                            <li><strong>string</strong> : chaîne de caractères (texte)</li>
+                            <li><strong>bool</strong> (boolean) : vrai ou faux</li>
+                            <li><strong>void</strong> : vide (rien)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-purple-100 dark:bg-purple-900 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold mb-2">Opérations</h3>
+                        <ul class="space-y-2">
+                            <li><strong>cout</strong> (console output) : sortie console</li>
+                            <li><strong>cin</strong> (console input) : entrée console</li>
+                            <li><strong>endl</strong> (end line) : fin de ligne</li>
+                            <li><strong>true</strong> : vrai</li>
+                            <li><strong>false</strong> : faux</li>
+                            <li><strong>new</strong> : nouveau</li>
+                            <li><strong>delete</strong> : supprimer</li>
+                        </ul>
+                    </div>
+                    <div class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold mb-2">Opérateurs</h3>
+                        <ul class="space-y-2">
+                            <li><strong>+</strong> : addition</li>
+                            <li><strong>-</strong> : soustraction</li>
+                            <li><strong>*</strong> : multiplication</li>
+                            <li><strong>/</strong> : division</li>
+                            <li><strong>%</strong> : modulo (reste de la division)</li>
+                            <li><strong>++</strong> : incrémenter (ajouter 1)</li>
+                            <li><strong>--</strong> : décrémenter (soustraire 1)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="bg-pink-100 dark:bg-pink-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Ponctuation et symboles</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong>{ }</strong> : accolades (délimitent un bloc de code)</div>
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong>( )</strong> : parenthèses (pour les conditions et fonctions)</div>
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong>[ ]</strong> : crochets (pour les tableaux)</div>
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong>;</strong> : point-virgule (termine une instruction)</div>
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong>.</strong> : point (pour accéder aux membres)</div>
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong>,</strong> : virgule (sépare les éléments d'une liste)</div>
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong>&</strong> : esperluette (pour les références)</div>
+                        <div class="p-2 rounded bg-white dark:bg-gray-700"><strong>*</strong> : astérisque (pour les pointeurs)</div>
+                    </div>
+                </div>
+                
+                <div class="bg-indigo-100 dark:bg-indigo-900 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold mb-2">Conseils pour nommer tes variables</h3>
+                    <p class="mb-4">En programmation, on utilise souvent ces conventions :</p>
+                    <ul class="list-disc list-inside space-y-2 pl-4">
+                        <li><strong>camelCase</strong> : première lettre en minuscule, puis majuscule pour chaque nouveau mot (ex: <code>monNombre</code>, <code>estVrai</code>)</li>
+                        <li><strong>snake_case</strong> : tout en minuscules avec des underscores (ex: <code>mon_nombre</code>, <code>est_vrai</code>)</li>
+                        <li>Évite les accents et caractères spéciaux</li>
+                        <li>Choisis des noms qui décrivent bien ce que contient la variable</li>
+                    </ul>
+                </div>
+                `
+            },
+            {
+                title: "Chapitre 9: Les structures de données",
+                content: `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">Les structures de données</h2>
+                    <p class="mb-4">Parfois, on veut stocker plusieurs informations ensemble. Les structures de données nous permettent d'organiser ces informations.</p>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center gap-6 mb-6">
+                    <div class="w-full md:w-1/3">
+                        <svg viewBox="0 0 200 200" class="w-full max-w-[200px] mx-auto">
+                            <rect x="40" y="40" width="120" height="120" fill="#FFD700" stroke="#5D5CDE" stroke-width="4" rx="10" />
+                            <line x1="40" y1="70" x2="160" y2="70" stroke="#5D5CDE" stroke-width="2" />
+                            <line x1="40" y1="100" x2="160" y2="100" stroke="#5D5CDE" stroke-width="2" />
+                            <line x1="40" y1="130" x2="160" y2="130" stroke="#5D5CDE" stroke-width="2" />
+                            <text x="100" y="60" text-anchor="middle" fill="#333" font-family="monospace" font-size="14">fruits[0] = "pomme"</text>
+                            <text x="100" y="90" text-anchor="middle" fill="#333" font-family="monospace" font-size="14">fruits[1] = "banane"</text>
+                            <text x="100" y="120" text-anchor="middle" fill="#333" font-family="monospace" font-size="14">fruits[2] = "orange"</text>
+                            <text x="100" y="150" text-anchor="middle" fill="#333" font-family="monospace" font-size="14">fruits[3] = "fraise"</text>
+                        </svg>
+                    </div>
+                    <div class="w-full md:w-2/3">
+                        <h3 class="text-xl font-bold mb-2">Les tableaux (arrays)</h3>
+                        <p class="mb-4">Un tableau est comme une armoire avec plusieurs tiroirs numérotés. Chaque tiroir peut contenir une valeur.</p>
+                        <p>Les tableaux sont très utiles quand on veut stocker plusieurs valeurs du même type, comme une liste de noms ou de scores.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Exemple de tableau</h3>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">// Création d'un tableau de 4 fruits
+string fruits[4] = {"pomme", "banane", "orange", "fraise"};
+
+// Accès à un élément du tableau
+cout << "Mon fruit préféré est la " << fruits[2] << endl;
+
+// Modification d'un élément du tableau
+fruits[1] = "kiwi";
+
+// Parcourir tous les éléments du tableau
+for (int i = 0; i < 4; i++) {
+    cout << "Fruit " << i << " : " << fruits[i] << endl;
+}</code></pre>
+                    </div>
+                    <div class="mt-4 p-2 bg-white dark:bg-gray-700 rounded">
+                        <p class="font-bold">Résultat :</p>
+                        <pre>Mon fruit préféré est la orange
+Fruit 0 : pomme
+Fruit 1 : kiwi
+Fruit 2 : orange
+Fruit 3 : fraise</pre>
+                    </div>
+                </div>
+                
+                <div class="bg-purple-100 dark:bg-purple-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Important à savoir sur les tableaux</h3>
+                    <ul class="list-disc list-inside space-y-2 pl-4">
+                        <li>En C++, les indices commencent à 0, pas à 1 ! Le premier élément est donc à l'indice 0.</li>
+                        <li>Un tableau de taille 4 a les indices 0, 1, 2 et 3.</li>
+                        <li>Il faut faire attention à ne pas dépasser la taille du tableau quand on y accède.</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-2">Les structures</h3>
+                    <p class="mb-4">Une structure permet de regrouper différentes variables sous un même nom, même si elles sont de types différents.</p>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">// Définition d'une structure pour un personnage
+struct Personnage {
+    string nom;
+    int pointsDeVie;
+    int force;
+    int agilite;
+};
+
+// Création d'un personnage
+Personnage hero;
+hero.nom = "Alex";
+hero.pointsDeVie = 100;
+hero.force = 15;
+hero.agilite = 12;
+
+// Affichage des informations du personnage
+cout << "Nom : " << hero.nom << endl;
+cout << "Points de vie : " << hero.pointsDeVie << endl;</code></pre>
+                    </div>
+                    <p>Une structure est comme une fiche d'identité qui regroupe plusieurs informations sur un même sujet.</p>
+                </div>
+                
+                <div class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold mb-2">Petit défi!</h3>
+                    <p class="mb-4">Que va afficher ce code ?</p>
+                    <div class="code-display p-4 mb-4">
+                        <pre><code class="text-primary">int nombres[5] = {10, 20, 30, 40, 50};
+int somme = 0;
+
+for (int i = 0; i < 5; i++) {
+    somme = somme + nombres[i];
+}
+
+cout << "La somme est : " << somme << endl;</code></pre>
+                    </div>
+                    <button id="show-answer-5" class="bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded">Révéler la réponse</button>
+                    <div id="answer-5" class="mt-4 hidden">
+                        <p>Le code va afficher : <strong>La somme est : 150</strong></p>
+                        <p>Car 10 + 20 + 30 + 40 + 50 = 150</p>
+                        <p>Ce code calcule la somme de tous les nombres dans le tableau.</p>
+                    </div>
+                </div>
+                `
+            },
+            {
+                title: "Chapitre 10: Dictionnaire C++ complet",
+                content: `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">Dictionnaire C++ complet</h2>
+                    <p class="mb-4">Voici un dictionnaire des termes les plus importants en C++. Tu peux t'y référer chaque fois que tu oublies quelque chose !</p>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">Types de données</h3>
+                            <ul class="space-y-2">
+                                <li><strong>int</strong> : Nombre entier (ex: 42)</li>
+                                <li><strong>float</strong> : Nombre à virgule flottante (ex: 3.14)</li>
+                                <li><strong>double</strong> : Nombre à virgule flottante plus précis</li>
+                                <li><strong>char</strong> : Un seul caractère (ex: 'A')</li>
+                                <li><strong>string</strong> : Chaîne de caractères (ex: "Bonjour")</li>
+                                <li><strong>bool</strong> : Valeur booléenne (true ou false)</li>
+                                <li><strong>void</strong> : Type vide, utilisé pour les fonctions qui ne renvoient rien</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">Opérateurs</h3>
+                            <ul class="space-y-2">
+                                <li><strong>+</strong> : Addition</li>
+                                <li><strong>-</strong> : Soustraction</li>
+                                <li><strong>*</strong> : Multiplication</li>
+                                <li><strong>/</strong> : Division</li>
+                                <li><strong>%</strong> : Modulo (reste de la division)</li>
+                                <li><strong>++</strong> : Incrémenter (ajouter 1)</li>
+                                <li><strong>--</strong> : Décrémenter (soustraire 1)</li>
+                                <li><strong>=</strong> : Affectation</li>
+                                <li><strong>==</strong> : Égal à</li>
+                                <li><strong>!=</strong> : Différent de</li>
+                                <li><strong>></strong> : Supérieur à</li>
+                                <li><strong><</strong> : Inférieur à</li>
+                                <li><strong>>=</strong> : Supérieur ou égal à</li>
+                                <li><strong><=</strong> : Inférieur ou égal à</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">Entrées/Sorties</h3>
+                            <ul class="space-y-2">
+                                <li><strong>cout</strong> : Afficher des données à l'écran</li>
+                                <li><strong>cin</strong> : Recevoir des données depuis le clavier</li>
+                                <li><strong>endl</strong> : Insérer une fin de ligne</li>
+                                <li><strong><<</strong> : Opérateur d'insertion (pour cout)</li>
+                                <li><strong>>></strong> : Opérateur d'extraction (pour cin)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">Structures de contrôle</h3>
+                            <ul class="space-y-2">
+                                <li><strong>if</strong> : Exécuter du code si une condition est vraie</li>
+                                <li><strong>else</strong> : Exécuter du code si la condition if est fausse</li>
+                                <li><strong>switch</strong> : Tester plusieurs cas de figure</li>
+                                <li><strong>for</strong> : Répéter un bloc de code un nombre défini de fois</li>
+                                <li><strong>while</strong> : Répéter tant qu'une condition est vraie</li>
+                                <li><strong>do-while</strong> : Exécuter au moins une fois, puis répéter tant qu'une condition est vraie</li>
+                                <li><strong>break</strong> : Sortir d'une boucle ou d'un switch</li>
+                                <li><strong>continue</strong> : Passer à l'itération suivante d'une boucle</li>
+                                <li><strong>return</strong> : Renvoyer une valeur d'une fonction</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">Fonctions standard</h3>
+                            <ul class="space-y-2">
+                                <li><strong>rand()</strong> : Générer un nombre aléatoire</li>
+                                <li><strong>srand()</strong> : Initialiser le générateur de nombres aléatoires</li>
+                                <li><strong>time()</strong> : Obtenir l'heure actuelle</li>
+                                <li><strong>strlen()</strong> : Obtenir la longueur d'une chaîne</li>
+                                <li><strong>sizeof()</strong> : Obtenir la taille en mémoire</li>
+                                <li><strong>sqrt()</strong> : Calculer la racine carrée</li>
+                                <li><strong>pow()</strong> : Élever un nombre à une puissance</li>
+                                <li><strong>min()</strong> : Trouver le plus petit de deux nombres</li>
+                                <li><strong>max()</strong> : Trouver le plus grand de deux nombres</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">Mots-clés importants</h3>
+                            <ul class="space-y-2">
+                                <li><strong>using namespace std</strong> : Utiliser l'espace de noms standard</li>
+                                <li><strong>include</strong> : Inclure une bibliothèque</li>
+                                <li><strong>const</strong> : Déclarer une constante</li>
+                                <li><strong>struct</strong> : Définir une structure</li>
+                                <li><strong>class</strong> : Définir une classe</li>
+                                <li><strong>public</strong> : Accessible depuis l'extérieur</li>
+                                <li><strong>private</strong> : Accessible uniquement depuis l'intérieur</li>
+                                <li><strong>new</strong> : Allouer de la mémoire</li>
+                                <li><strong>delete</strong> : Libérer de la mémoire</li>
+                                <li><strong>this</strong> : Référence à l'objet courant</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-bold mb-2">Bibliothèques courantes</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="p-2 rounded bg-gray-100 dark:bg-gray-700">
+                            <strong>iostream</strong> : Entrées/sorties
+                        </div>
+                        <div class="p-2 rounded bg-gray-100 dark:bg-gray-700">
+                            <strong>string</strong> : Manipulation de chaînes
+                        </div>
+                        <div class="p-2 rounded bg-gray-100 dark:bg-gray-700">
+                            <strong>cmath</strong> : Fonctions mathématiques
+                        </div>
+                        <div class="p-2 rounded bg-gray-100 dark:bg-gray-700">
+                            <strong>cstdlib</strong> : Utilitaires standard
+                        </div>
+                        <div class="p-2 rounded bg-gray-100 dark:bg-gray-700">
+                            <strong>ctime</strong> : Fonctions liées au temps
+                        </div>
+                        <div class="p-2 rounded bg-gray-100 dark:bg-gray-700">
+                            <strong>vector</strong> : Tableaux dynamiques
+                        </div>
+                        <div class="p-2 rounded bg-gray-100 dark:bg-gray-700">
+                            <strong>array</strong> : Tableaux de taille fixe
+                        </div>
+                        <div class="p-2 rounded bg-gray-100 dark:bg-gray-700">
+                            <strong>algorithm</strong> : Algorithmes
+                        </div>
+                        <div class="p-2 rounded bg-gray-100 dark:bg-gray-700">
+                            <strong>fstream</strong> : Fichiers
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 text-center">
+                        <p class="font-bold text-primary">Félicitations !</p>
+                        <p>Tu as terminé ton voyage dans le monde magique du C++ ! Continue à t'entraîner et à créer de nouveaux programmes !</p>
+                    </div>
+                </div>
+                `
+            }
+        ];
+        
+        // Dictionary content
+        const dictionaryEntries = [
+            { term: "int", definition: "Type de données pour les nombres entiers (integer)" },
+            { term: "float", definition: "Type de données pour les nombres à virgule flottante" },
+            { term: "string", definition: "Type de données pour les chaînes de caractères (texte)" },
+            { term: "bool", definition: "Type de données pour les valeurs vrai (true) ou faux (false)" },
+            { term: "void", definition: "Type vide utilisé pour les fonctions qui ne renvoient rien" },
+            { term: "if", definition: "Instruction qui exécute du code si une condition est vraie" },
+            { term: "else", definition: "Instruction qui s'exécute quand la condition if est fausse" },
+            { term: "for", definition: "Boucle qui répète du code un nombre défini de fois" },
+            { term: "while", definition: "Boucle qui répète du code tant qu'une condition est vraie" },
+            { term: "do-while", definition: "Boucle qui exécute du code au moins une fois, puis répète tant qu'une condition est vraie" },
+            { term: "break", definition: "Instruction pour sortir immédiatement d'une boucle" },
+            { term: "continue", definition: "Instruction pour passer à l'itération suivante d'une boucle" },
+            { term: "return", definition: "Instruction pour renvoyer une valeur depuis une fonction" },
+            { term: "cout", definition: "Objet utilisé pour afficher des données à l'écran (Console OUTput)" },
+            { term: "cin", definition: "Objet utilisé pour recevoir des données depuis le clavier (Console INput)" },
+            { term: "endl", definition: "Manipulateur qui insère une fin de ligne (End Line)" },
+            { term: "function", definition: "Bloc de code réutilisable qui effectue une tâche spécifique" },
+            { term: "parameter", definition: "Variable qui reçoit une valeur quand une fonction est appelée" },
+            { term: "argument", definition: "Valeur passée à une fonction lors de son appel" },
+            { term: "array", definition: "Collection de valeurs du même type, accessibles par un indice" },
+            { term: "struct", definition: "Structure qui peut contenir différents types de données" },
+            { term: "class", definition: "Modèle qui définit les propriétés et comportements d'un objet" },
+            { term: "object", definition: "Instance d'une classe" },
+            { term: "pointer", definition: "Variable qui contient l'adresse mémoire d'une autre variable" },
+            { term: "reference", definition: "Alias pour une variable existante" },
+            { term: "namespace", definition: "Conteneur qui groupe des éléments liés sous un nom" },
+            { term: "header", definition: "Fichier d'en-tête qui contient des déclarations de fonctions et classes" },
+            { term: "include", definition: "Directive qui inclut un fichier d'en-tête dans votre programme" },
+            { term: "library", definition: "Collection de fonctions et classes prédéfinies que vous pouvez utiliser" },
+            { term: "compiler", definition: "Programme qui traduit le code C++ en code machine" },
+            { term: "debug", definition: "Processus de recherche et correction d'erreurs dans un programme" }
+        ];
+
+        let currentPage = 0;
+        
+        // Initialize the book
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start button
+            document.getElementById('start-button').addEventListener('click', function() {
+                document.getElementById('cover').classList.add('hidden');
+                document.getElementById('page-content').classList.remove('hidden');
+                loadPage(0);
+            });
+            
+            // Navigation buttons
+            document.getElementById('prev-page').addEventListener('click', function() {
+                if (currentPage > 0) {
+                    loadPage(currentPage - 1);
+                }
+            });
+            
+            document.getElementById('next-page').addEventListener('click', function() {
+                if (currentPage < bookContent.length - 1) {
+                    loadPage(currentPage + 1);
+                }
+            });
+            
+            // Table of contents button
+            document.getElementById('table-of-contents-button').addEventListener('click', function() {
+                showTableOfContents();
+            });
+            
+            document.getElementById('close-toc').addEventListener('click', function() {
+                document.getElementById('toc-popup').classList.add('hidden');
+            });
+            
+            // Dictionary button
+            document.getElementById('dictionary-button').addEventListener('click', function() {
+                showDictionary();
+            });
+            
+            document.getElementById('close-dictionary').addEventListener('click', function() {
+                document.getElementById('dictionary-popup').classList.add('hidden');
+            });
+            
+            // Dictionary search
+            document.getElementById('dictionary-search').addEventListener('input', function(e) {
+                filterDictionary(e.target.value);
+            });
+            
+            // Initialize table of contents
+            initializeTableOfContents();
+            
+            // Initialize dictionary
+            initializeDictionary();
+        });
+        
+        // Load a specific page
+        function loadPage(pageNumber) {
+            currentPage = pageNumber;
+            const pageContent = bookContent[pageNumber];
+            
+            document.getElementById('current-page').innerHTML = `
+                <h2 class="text-2xl font-bold mb-6 text-primary">${pageContent.title}</h2>
+                ${pageContent.content}
+            `;
+            
+            document.getElementById('page-indicator').textContent = `Page ${pageNumber + 1} / ${bookContent.length}`;
+            document.getElementById('prev-page').disabled = (pageNumber === 0);
+            document.getElementById('next-page').disabled = (pageNumber === bookContent.length - 1);
+            
+            // Add event listeners for interactive elements
+            addPageInteractivity();
+        }
+        
+        // Add interactivity to the current page
+        function addPageInteractivity() {
+            // Show answer buttons
+            const answerButtons = document.querySelectorAll('[id^="show-answer-"]');
+            answerButtons.forEach(button => {
+                const answerId = button.id.replace('show-answer-', 'answer-');
+                button.addEventListener('click', function() {
+                    document.getElementById(answerId).classList.remove('hidden');
+                    button.classList.add('hidden');
+                });
+            });
+            
+            // Quiz options
+            const quizOptions = document.querySelectorAll('.quiz-option');
+            quizOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const parent = this.parentElement;
+                    const options = parent.querySelectorAll('.quiz-option');
+                    
+                    options.forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    this.classList.add('selected');
+                    
+                    // Show quiz result
+                    const resultId = parent.parentElement.querySelector('[id^="quiz-result-"]').id;
+                    document.getElementById(resultId).classList.remove('hidden');
+                });
+            });
+        }
+        
+        // Initialize table of contents
+        function initializeTableOfContents() {
+            const tocList = document.getElementById('toc-list');
+            tocList.innerHTML = '';
+            
+            bookContent.forEach((page, index) => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <button class="w-full text-left hover:text-primary py-1">${page.title}</button>
+                `;
+                listItem.querySelector('button').addEventListener('click', function() {
+                    loadPage(index);
+                    document.getElementById('toc-popup').classList.add('hidden');
+                });
+                tocList.appendChild(listItem);
+            });
+        }
+        
+        // Show table of contents
+        function showTableOfContents() {
+            document.getElementById('toc-popup').classList.remove('hidden');
+        }
+        
+        // Initialize dictionary
+        function initializeDictionary() {
+            const dictionaryContent = document.getElementById('dictionary-content');
+            dictionaryContent.innerHTML = '';
+            
+            dictionaryEntries.sort((a, b) => a.term.localeCompare(b.term)).forEach(entry => {
+                const entryElement = document.createElement('div');
+                entryElement.className = 'p-3 border-b border-gray-200 dark:border-gray-700';
+                entryElement.innerHTML = `
+                    <h4 class="font-bold text-primary">${entry.term}</h4>
+                    <p>${entry.definition}</p>
+                `;
+                dictionaryContent.appendChild(entryElement);
+            });
+        }
+        
+        // Show dictionary
+        function showDictionary() {
+            document.getElementById('dictionary-popup').classList.remove('hidden');
+        }
+        
+        // Filter dictionary based on search
+        function filterDictionary(searchTerm) {
+            const dictionaryContent = document.getElementById('dictionary-content');
+            const entries = dictionaryContent.querySelectorAll('div');
+            
+            const searchLower = searchTerm.toLowerCase();
+            
+            entries.forEach(entry => {
+                const term = entry.querySelector('h4').textContent.toLowerCase();
+                const definition = entry.querySelector('p').textContent.toLowerCase();
+                
+                if (term.includes(searchLower) || definition.includes(searchLower)) {
+                    entry.style.display = '';
+                } else {
+                    entry.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
